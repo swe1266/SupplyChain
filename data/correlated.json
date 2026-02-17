@@ -1,0 +1,11 @@
+{
+    "total_libraries": 30,
+    "vulnerable_count": 0,
+    "outdated_count": 0,
+    "unknown_version_count": 0,
+    "critical_cve_count": 0,
+    "cpu_usage": 8.6,
+    "memory_usage": 90.4,
+    "runtime_anomaly": true,
+    "scan_time": "2026-02-17T08:32:34.225350"
+}

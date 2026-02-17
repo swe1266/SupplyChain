@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SupplyGuard - Security Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 font-sans min-h-screen">
+
+
+    <div class="container mx-auto p-6">
+
+        <!-- Header -->
+        <div class="mb-8 text-center">
+            <h1 class="text-4xl font-extrabold text-gray-800 tracking-wide">
+                🛡️ SupplyGuard
+            </h1>
+            <p class="text-gray-500 mt-2">
+                Real-time Supply Chain Security Dashboard
+            </p>
+        </div>
+
+
+        <!-- Runtime Metrics & Threat Alerts -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+            <!-- Runtime Metrics -->
+        <div class="bg-white rounded-xl shadow-md p-5 border-l-4 border-blue-500">
+            <h2 class="text-lg font-semibold text-gray-700 mb-3">⚙️ Runtime Metrics</h2>
+
+            <div class="text-sm mb-1">CPU Usage</div>
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-3">
+                <div id="cpu-bar" class="bg-blue-500 h-3 rounded-full" style="width: {{ runtime.cpu }}%"></div>
+            </div>
+
+            <div class="text-sm mb-1">Memory Usage</div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div id="memory-bar" class="bg-indigo-500 h-3 rounded-full" style="width: {{ runtime.memory }}%"></div>
+            </div>
+        </div>
+
+
+            <!-- Threat Alerts -->
+        <div class="bg-white rounded-xl shadow-md p-5 border-l-4 border-red-500">
+            <h2 class="text-lg font-semibold text-gray-700 mb-3">🚨 Threat Alerts</h2>
+
+            {% if threats %}
+                <ul class="space-y-2 text-sm">
+                    {% for t in threats %}
+                        <li class="bg-red-50 border border-red-200 p-2 rounded">
+                            {{ t.library }} – {{ t.issue }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-green-600 font-medium">✔ No threats detected</p>
+            {% endif %}
+        </div>
+
+
+        <!-- SBOM Section -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">📦 SBOM</h2>
+
+            <div class="max-h-96 overflow-y-auto space-y-2 text-sm">
+                {% for item in sbom %}
+                <div class="flex justify-between items-center border p-2 rounded">
+                    <span>{{ item.name }} <span class="text-gray-400">({{ item.version }})</span></span>
+
+                    {% if item.vulnerabilities %}
+                        <span class="bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-semibold">
+                            VULNERABLE
+                        </span>
+                    {% else %}
+                        <span class="bg-green-100 text-green-600 px-2 py-1 rounded text-xs font-semibold">
+                            SAFE
+                        </span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+
+       <!-- Custom Scan Form (existing) -->
+        <div class="bg-white shadow-xl rounded-xl p-6 max-w-md mx-auto mb-10">
+            <h2 class="text-xl font-bold text-center text-gray-700 mb-4">🔍 Custom Scan</h2>
+
+            <form method="POST" action="/custom-scan" class="space-y-4">
+                <input class="w-full border p-3 rounded" name="library" placeholder="Library (e.g. flask)" required>
+                <input class="w-full border p-3 rounded" name="version" placeholder="Version (e.g. 2.0)" required>
+
+                <select name="mode" class="w-full border p-3 rounded">
+                    <option value="all">All</option>
+                    <option value="known">Known Vulnerabilities</option>
+                    <option value="unknown">Unknown Versions</option>
+                </select>
+
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded font-semibold">
+                    Scan Library
+                </button>
+            </form>
+
+        </div>
+
+
+    <!-- NEW: Scan All Libraries -->
+    <div class="mt-4 text-center">
+        <a href="/custom-scan-all" 
+           class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-semibold inline-block">
+           Scan All Libraries
+        </a>
+        <p class="text-sm text-gray-500 mt-2">Check installed + popular libraries with recommended versions</p>
+    </div>
+</div>
+
+    <!-- AI Assistant Floating Bot -->
+<div class="fixed bottom-6 right-6 z-[9999]">
+
+    <!-- Chat Box -->
+    <div id="ai_box"
+         class="hidden w-80 bg-white shadow-2xl rounded-xl p-4 mb-4 border
+                absolute bottom-20 right-0">
+
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-gray-700 flex items-center gap-2">
+                🤖 AI Security Summary
+            </h3>
+            <button onclick="toggleAI()" class="text-gray-400 hover:text-red-500">
+                ✕
+            </button>
+        </div>
+
+        <div id="ai_content"
+             class="text-sm text-gray-700 max-h-48 overflow-y-auto leading-relaxed">
+            Click the AI button to analyze your system.
+        </div>
+    </div>
+
+    <!-- Floating Button -->
+    <button onclick="toggleAI()"
+        class="w-16 h-16 rounded-full bg-blue-600 hover:bg-blue-700 text-white
+               shadow-xl flex items-center justify-center text-2xl
+               ring-4 ring-blue-200 transition">
+        🤖
+    </button>
+
+</div>
+
+<script>
+async function toggleAI() {
+    const box = document.getElementById("ai_box");
+    const content = document.getElementById("ai_content");
+
+    box.classList.toggle("hidden");
+
+    if (!box.classList.contains("hidden")) {
+        content.innerText = "Analyzing runtime, threats, and SBOM...";
+        try {
+            const res = await fetch("/ai_summary");
+            const data = await res.json();
+            content.innerText = data.summary || "No insights available.";
+        } catch (e) {
+            content.innerText = "AI service unavailable.";
+        }
+    }
+}
+</script>
+
+  
+
+   
+    <!-- JS for Live Runtime Updates -->
+    <script>
+        async function updateRuntime() {
+            const res = await fetch("/runtime");
+            const data = await res.json();
+
+            document.getElementById("cpu").innerText = data.cpu;
+            document.getElementById("memory").innerText = data.memory;
+
+            document.getElementById("cpu-bar").style.width = data.cpu + "%";
+            document.getElementById("memory-bar").style.width = data.memory + "%";
+        }
+
+        setInterval(updateRuntime, 2000);
+        updateRuntime();
+
+        async function getSummary() {
+            const res = await fetch('/ai_summary');
+            const data = await res.json();
+            document.getElementById('chat_content').innerText = data.summary;
+        }
+    </script>
+
+</body>
+</html>

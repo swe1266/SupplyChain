@@ -1,0 +1,67 @@
+<h2>Risk Level: <span id="risk">--</span></h2>
+
+<h3>Threat Alerts</h3>
+<ul id="alerts"></ul>
+
+<h3>SBOM</h3>
+<ul id="sbom"></ul>
+
+<h3>Runtime</h3>
+CPU: <span id="cpu">--</span><br>
+Memory: <span id="memory">--</span>
+<script>
+function updateRuntime() {
+  fetch("/runtime")
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById("cpu").innerText = d.cpu + "%";
+      document.getElementById("memory").innerText = d.memory + "%";
+    });
+}
+
+function updateRisk() {
+  fetch("/risk")
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById("risk").innerText = d.risk;
+    });
+}
+
+function updateThreats() {
+  fetch("/threats")
+    .then(r => r.json())
+    .then(alerts => {
+      let ul = document.getElementById("alerts");
+      ul.innerHTML = "";
+      if (alerts.length === 0) {
+        ul.innerHTML = "<li>No threats detected</li>";
+      } else {
+        alerts.forEach(a => {
+          ul.innerHTML += `<li style="color:red">${a}</li>`;
+        });
+      }
+    });
+}
+
+function updateSBOM() {
+  fetch("/sbom")
+    .then(r => r.json())
+    .then(pkgs => {
+      let ul = document.getElementById("sbom");
+      ul.innerHTML = "";
+      pkgs.forEach(p => {
+        let color = p.status === "VULNERABLE" ? "red" : "green";
+        ul.innerHTML += `<li style="color:${color}">
+          ${p.name} - ${p.version} (${p.status})
+        </li>`;
+      });
+    });
+}
+
+setInterval(() => {
+  updateRuntime();
+  updateRisk();
+  updateThreats();
+  updateSBOM();
+}, 3000);
+</script>
