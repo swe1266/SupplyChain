@@ -1,38 +1,58 @@
+import json
 import os
 from openai import OpenAI
 
-client = None
+# ---------------- CONFIG ----------------
 
-def get_client():
-    global client
-    if client is None:
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            return None
-        client = OpenAI(api_key=api_key)
-    return client
+# OPTION A: OpenAI Cloud
+# client = OpenAI(api_key="your_openai_key_here")
+
+# OPTION B: Ollama Local
+client = OpenAI(
+    base_url="http://localhost:11434/v1",
+    api_key="ollama"
+)
+
+MODEL_NAME = "llama3"   # change if needed
+
+
+# ---------------- GENERATE SUMMARY ----------------
 
 def generate_summary():
+    """
+    Reads correlated risk metrics and generates AI security summary.
+    """
+
     try:
-        with open("data/runtime.log") as f:
-            lines = f.readlines()[-5:]  # last 5 events
-    except FileNotFoundError:
-        return "No monitoring data available."
+        with open("data/correlated.json") as f:
+            metrics = json.load(f)
+    except:
+        return "No scan data available yet."
 
-    high_cpu = 0
-    threats_found = 0
+    prompt = f"""
+    You are a cybersecurity analyst AI.
 
-    for line in lines:
-        data = eval(line)
-        if data["runtime"]["cpu"] > 70:
-            high_cpu += 1
-        if data["threats"]:
-            threats_found += 1
+    Analyze the following supply chain security data and provide:
+    - Overall risk level
+    - Key vulnerabilities
+    - Threat insights
+    - Recommended actions
 
-    if threats_found:
-        return "Multiple security threats detected recently. Immediate attention recommended."
+    Data:
+    {json.dumps(metrics, indent=2)}
+    """
 
-    if high_cpu:
-        return "System experiencing high CPU usage but no active threats."
+    try:
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": "You are a senior cybersecurity expert."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3
+        )
 
-    return "System operating normally with no significant threats."
+        return response.choices[0].message.content
+
+    except Exception as e:
+        return f"AI Error: {str(e)}"
