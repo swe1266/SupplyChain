@@ -35,3 +35,14 @@
 {"time": "2026-02-17T10:03:16.186370", "runtime": {"cpu": 68.9, "memory": 94.4}, "threats": [{"library": "dependency-x", "issue": "Suspicious update detected"}]}
 {"time": "2026-02-17T10:28:36.975236", "runtime": {"cpu": 16.8, "memory": 93.9}, "threats": []}
 {"time": "2026-02-17T10:34:03.138546", "runtime": {"cpu": 14.8, "memory": 89.7}, "threats": []}
+{"time": "2026-02-18T13:52:14.488305", "runtime": {"cpu": 36.4, "memory": 87.5}, "threats": []}
+{"time": "2026-02-18T14:14:49.652015", "runtime": {"cpu": 12.0, "memory": 68.2}, "threats": []}
+{"time": "2026-02-20T09:58:13.519740", "runtime": {"cpu": 62.0, "memory": 91.6}, "threats": []}
+{"time": "2026-02-20T10:01:56.714939", "runtime": {"cpu": 70.1, "memory": 94.3}, "threats": [{"library": "dependency-x", "issue": "Suspicious update detected"}]}
+{"time": "2026-02-20T10:04:11.319701", "runtime": {"cpu": 61.0, "memory": 89.0}, "threats": [{"library": "dependency-x", "issue": "Suspicious update detected"}]}
+{"time": "2026-02-21T09:21:35.719885", "runtime": {"cpu": 14.6, "memory": 80.8}, "threats": []}
+{"time": "2026-02-21T09:24:09.101555", "runtime": {"cpu": 20.7, "memory": 82.9}, "threats": [{"library": "dependency-x", "issue": "Suspicious update detected"}]}
+{"time": "2026-02-21T09:25:32.330690", "runtime": {"cpu": 8.2, "memory": 82.6}, "threats": [{"library": "dependency-x", "issue": "Suspicious update detected"}]}
+{"time": "2026-02-21T09:31:04.928655", "runtime": {"cpu": 8.1, "memory": 85.3}, "threats": []}
+{"time": "2026-02-21T09:41:31.918806", "runtime": {"cpu": 11.8, "memory": 80.1}, "threats": []}
+{"time": "2026-02-21T09:48:44.740886", "runtime": {"cpu": 12.2, "memory": 79.7}, "threats": []}

@@ -155,11 +155,20 @@ async function toggleAI() {
     box.classList.toggle("hidden");
 
     if (!box.classList.contains("hidden")) {
-        content.innerText = "Analyzing runtime, threats, and SBOM...";
+        content.innerHTML = `
+            <div class="flex items-center gap-2">
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                <span>Analyzing security posture...</span>
+            </div>
+`       ;
         try {
             const res = await fetch("/ai_summary");
             const data = await res.json();
-            content.innerText = data.summary || "No insights available.";
+            content.innerHTML = `
+                <div class="whitespace-pre-line">
+                    ${data.summary || "No insights available."}
+                </div>
+`           ;
         } catch (e) {
             content.innerText = "AI service unavailable.";
         }
@@ -167,7 +176,6 @@ async function toggleAI() {
 }
 </script>
 
-  
 
    
     <!-- JS for Live Runtime Updates -->

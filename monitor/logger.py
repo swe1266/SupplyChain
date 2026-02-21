@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from genai.analyzer import analyze_threat
+from monitor.ai_bot import generate_summary
 
 def log_event(runtime, threats):
     entry = {
@@ -14,7 +14,7 @@ def log_event(runtime, threats):
         f.write(json.dumps(entry) + "\n")
 
     # AI Analysis
-    ai_result = analyze_threat(entry)
+    ai_result =  generate_summary()
 
     print("\n--- AI Threat Analysis ---")
     print(ai_result)

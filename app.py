@@ -152,7 +152,22 @@ def custom_scan_all():
 # ---------------- AI SUMMARY (CHATBOT API) ----------------
 @app.route("/ai_summary")
 def ai_summary():
-    summary_text = generate_summary()
+    # 1. Get fresh system state (same logic as home)
+    sbom_data = generate_sbom()
+    threat_data = threat_check(sbom_data)
+
+    runtime_data = {
+        "cpu": psutil.cpu_percent(interval=0.5),
+        "memory": psutil.virtual_memory().percent
+    }
+
+    # 2. Send structured data to AI
+    summary_text = generate_summary(
+        runtime=runtime_data,
+        threats=threat_data,
+        sbom=sbom_data
+    )
+
     return jsonify({"summary": summary_text})
 
 
@@ -165,44 +180,6 @@ def get_safe_version(lib_name):
     This can later query OSV or return latest if safe.
     """
     return "latest"
-
-def scan_all_libraries():
-    """
-    Scan installed libraries + popular non-installed libraries.
-    Returns results with vulnerabilities and recommended safe versions.
-    """
-    # Step 1: Installed libraries
-    installed = generate_sbom()
-    installed_names = [l["name"] for l in installed]
-    results = []
-
-    for lib in installed:
-        vulns = check_external_vuln(lib["name"], lib["version"])
-        results.append({
-            "name": lib["name"],
-            "installed_version": lib["version"],
-            "vulnerable": bool(vulns),
-            "vulns": vulns,
-            "recommended_version": get_safe_version(lib["name"])
-        })
-
-    # Step 2: Popular libraries not installed
-    for lib_name in POPULAR_LIBS:
-        if lib_name not in installed_names:
-            recommended = get_safe_version(lib_name)
-            results.append({
-                "name": lib_name,
-                "installed_version": None,
-                "vulnerable": False,  # Not installed yet
-                "vulns": [],
-                "recommended_version": recommended
-            })
-
-    return results
-
-
-
-
 
 # ---------------- RUN APP ----------------
 if __name__ == "__main__":

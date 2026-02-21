@@ -4,8 +4,8 @@
     "outdated_count": 0,
     "unknown_version_count": 0,
     "critical_cve_count": 0,
-    "cpu_usage": 14.8,
-    "memory_usage": 89.7,
-    "runtime_anomaly": true,
-    "scan_time": "2026-02-17T10:34:03.133324"
+    "cpu_usage": 12.2,
+    "memory_usage": 79.7,
+    "runtime_anomaly": false,
+    "scan_time": "2026-02-21T09:48:44.739530"
 }
