@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request
 import psutil
 import random
 import json
-
+import os
 
 # ---------------- IMPORT PROJECT MODULES ----------------
 from sbom.scan import generate_sbom
@@ -15,7 +15,24 @@ from monitor.custom_scan import scan_all_libraries
 from monitor.correlate import build_metrics
 from monitor.logger import log_event
 
+from runtime.collector import collect_metrics
+from runtime.baseline import load_baseline, build_baseline
+from runtime.anomaly import detect_anomaly
+from runtime.scorer import classify_runtime_risk
+
+
+# ---------------- APP INIT ----------------
 app = Flask(__name__)
+
+
+# ---------------- BASELINE INITIALIZATION ----------------
+BASELINE_FILE = "data/baseline.json"
+
+if not os.path.exists(BASELINE_FILE):
+    print("[!] Baseline not found. Building baseline (one-time setup)...")
+    baseline = build_baseline()
+else:
+    baseline = load_baseline()
 
 # ---------------- HOME DASHBOARD ----------------
 @app.route("/")
@@ -46,9 +63,20 @@ def home():
 # ---------------- RUNTIME API ----------------
 @app.route("/runtime")
 def runtime_api():
+
+    metrics = collect_metrics()
+
+    anomaly_details, score = detect_anomaly(metrics, baseline)
+
+    risk_level = classify_runtime_risk(score)
+
     return jsonify({
-        "cpu": psutil.cpu_percent(interval=0.5),
-        "memory": psutil.virtual_memory().percent
+        "cpu": metrics["cpu"],
+        "memory": metrics["memory"],
+        "network": metrics["network"],
+        "process_count": metrics["process_count"],
+        "runtime_risk": risk_level,
+        "anomaly_details": anomaly_details
     })
 
 # ---------------- THREATS API (SIMULATED) ----------------
@@ -64,6 +92,26 @@ def threats_api():
     active = random.sample(THREAT_POOL, random.randint(0, 2))
     return jsonify(active)
 
+# ---------------- RISK API ----------------
+@app.route("/risk")
+def risk_api():
+
+    # Get SBOM vulnerability results
+    sbom_data = sbom_api().get_json()
+
+    # Get runtime metrics
+    metrics = collect_metrics()
+    anomaly_details, score = detect_anomaly(metrics, baseline)
+    runtime_risk = classify_runtime_risk(score)
+
+    # Combine into hybrid scoring
+    results = get_scored_results(
+        sbom_data=sbom_data,
+        runtime_score=score,
+        runtime_risk=runtime_risk
+    )
+
+    return jsonify(results)
 # ---------------- SBOM + VULNERABILITY API ----------------
 @app.route("/sbom")
 def sbom_api():

@@ -1,67 +1,841 @@
-<h2>Risk Level: <span id="risk">--</span></h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SupplyGuard - Security Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f5ff;
+            --neon-pink: #ff006e;
+            --neon-green: #39ff14;
+            --neon-yellow: #ffea00;
+            --neon-orange: #ff6b00;
+            --dark-bg: #030812;
+            --panel-bg: rgba(0, 10, 30, 0.85);
+            --panel-border: rgba(0, 245, 255, 0.2);
+            --grid-color: rgba(0, 245, 255, 0.04);
+            --text-primary: #c8f0ff;
+            --text-dim: #4a7a8a;
+        }
 
-<h3>Threat Alerts</h3>
-<ul id="alerts"></ul>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-<h3>SBOM</h3>
-<ul id="sbom"></ul>
+        body {
+            background-color: var(--dark-bg);
+            font-family: 'Rajdhani', sans-serif;
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
 
-<h3>Runtime</h3>
-CPU: <span id="cpu">--</span><br>
-Memory: <span id="memory">--</span>
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg, transparent, transparent 2px,
+                rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            opacity: 0.4;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 0.2em;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            animation: glitch 4s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 92%, 100% { transform: none; filter: none; }
+            93% { transform: translateX(-3px); filter: hue-rotate(90deg); }
+            95% { transform: translateX(3px) skewX(2deg); filter: hue-rotate(-90deg); }
+            97% { transform: translateX(-1px); filter: none; }
+        }
+
+        .logo-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--neon-cyan);
+            letter-spacing: 0.3em;
+            margin-top: 0.4rem;
+            opacity: 0.7;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--neon-green);
+            box-shadow: 0 0 8px var(--neon-green);
+            animation: pulse-dot 2s infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ── RISK LEVEL BANNER ── */
+        .risk-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 4px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .risk-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
+        }
+
+        .risk-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .risk-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            transition: color 0.5s, text-shadow 0.5s;
+        }
+
+        .risk-low    { color: var(--neon-green);  text-shadow: 0 0 20px var(--neon-green); }
+        .risk-medium { color: var(--neon-yellow);  text-shadow: 0 0 20px var(--neon-yellow); }
+        .risk-high   { color: var(--neon-orange);  text-shadow: 0 0 20px var(--neon-orange); animation: risk-flash 1.5s infinite; }
+        .risk-critical{ color: var(--neon-pink);   text-shadow: 0 0 30px var(--neon-pink);  animation: risk-flash 0.8s infinite; }
+
+        @keyframes risk-flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .risk-indicator {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .risk-pip {
+            width: 10px; height: 28px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: background 0.4s, box-shadow 0.4s;
+        }
+
+        /* ── PANELS ── */
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 4px;
+            padding: 1.5rem;
+            position: relative;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+
+        .panel::after {
+            content: '';
+            position: absolute;
+            bottom: 0; right: 0;
+            width: 20px; height: 20px;
+            border-bottom: 2px solid var(--neon-cyan);
+            border-right: 2px solid var(--neon-cyan);
+            opacity: 0.5;
+        }
+
+        .panel-corner-tl {
+            position: absolute;
+            top: 0; left: 0;
+            width: 20px; height: 20px;
+            border-top: 2px solid var(--neon-cyan);
+            border-left: 2px solid var(--neon-cyan);
+            opacity: 0.5;
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: var(--neon-cyan);
+            margin-bottom: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        /* ── RUNTIME METRICS ── */
+        .metric-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            margin-bottom: 0.4rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .metric-label span { color: var(--neon-cyan); }
+
+        .bar-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 245, 255, 0.07);
+            margin-bottom: 1.2rem;
+            position: relative;
+            overflow: visible;
+        }
+
+        .bar-fill {
+            height: 100%;
+            position: relative;
+            transition: width 0.6s ease;
+        }
+
+        .bar-fill::after {
+            content: '';
+            position: absolute;
+            right: -2px; top: -3px;
+            width: 3px; height: 12px;
+            background: white;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .bar-cpu { background: var(--neon-cyan); box-shadow: 0 0 12px var(--neon-cyan); }
+        .bar-mem { background: var(--neon-pink);  box-shadow: 0 0 12px var(--neon-pink); }
+
+        /* ── THREATS ── */
+        .threat-item {
+            background: rgba(255, 0, 110, 0.06);
+            border: 1px solid rgba(255, 0, 110, 0.25);
+            border-left: 3px solid var(--neon-pink);
+            padding: 0.6rem 0.8rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: #ff6699;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: threat-flash 3s infinite;
+            list-style: none;
+        }
+
+        @keyframes threat-flash {
+            0%, 80%, 100% { border-left-color: var(--neon-pink); }
+            85% { border-left-color: var(--neon-yellow); }
+        }
+
+        .no-threat {
+            color: var(--neon-green);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            list-style: none;
+        }
+
+        .no-threat::before { content: '> '; }
+
+        /* ── SBOM ── */
+        .sbom-scroll {
+            max-height: 280px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-cyan) transparent;
+        }
+
+        .sbom-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.6rem;
+            border-bottom: 1px solid rgba(0,245,255,0.06);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            transition: background 0.2s;
+            list-style: none;
+        }
+
+        .sbom-item:hover { background: rgba(0,245,255,0.04); }
+        .sbom-version { color: var(--text-dim); margin-left: 0.5rem; }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            font-weight: 700;
+            border-radius: 2px;
+            text-transform: uppercase;
+        }
+
+        .badge-vuln {
+            background: rgba(255, 0, 110, 0.15);
+            color: var(--neon-pink);
+            border: 1px solid rgba(255, 0, 110, 0.4);
+            box-shadow: 0 0 8px rgba(255,0,110,0.2);
+        }
+
+        .badge-safe {
+            background: rgba(57, 255, 20, 0.08);
+            color: var(--neon-green);
+            border: 1px solid rgba(57, 255, 20, 0.3);
+        }
+
+        /* ── SCAN FORM ── */
+        .form-panel { max-width: 500px; margin: 0 auto 2rem; }
+
+        .cyber-input {
+            width: 100%;
+            background: rgba(0, 10, 30, 0.9);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 2px;
+            padding: 0.75rem 1rem;
+            color: var(--neon-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            margin-bottom: 0.75rem;
+        }
+
+        .cyber-input::placeholder { color: var(--text-dim); }
+
+        .cyber-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0,245,255,0.15), inset 0 0 10px rgba(0,245,255,0.03);
+        }
+
+        .cyber-select {
+            width: 100%;
+            background: rgba(0, 10, 30, 0.9);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 2px;
+            padding: 0.75rem 1rem;
+            color: var(--text-dim);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            outline: none;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='%2300f5ff'%3E%3Cpath d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+        }
+
+        .cyber-select option { background: #030812; }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.85rem;
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: crosshair;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--neon-cyan);
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+            z-index: 0;
+        }
+
+        .btn-primary:hover::before { transform: translateX(0); }
+        .btn-primary:hover { color: var(--dark-bg); box-shadow: 0 0 25px rgba(0,245,255,0.4); }
+        .btn-primary span { position: relative; z-index: 1; }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 0.85rem 2rem;
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: crosshair;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--neon-green);
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+            z-index: 0;
+        }
+
+        .btn-secondary:hover::before { transform: translateX(0); }
+        .btn-secondary:hover { color: var(--dark-bg); box-shadow: 0 0 25px rgba(57,255,20,0.4); }
+        .btn-secondary span { position: relative; z-index: 1; }
+
+        .scan-all-block { text-align: center; margin-bottom: 3rem; }
+
+        .scan-all-sub {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 0.6rem;
+            letter-spacing: 0.1em;
+        }
+
+        /* ── AI BOT ── */
+        #ai_box {
+            position: absolute;
+            bottom: 5rem; right: 0;
+            width: 320px;
+            background: rgba(3, 8, 18, 0.97);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 4px;
+            padding: 1.2rem;
+            box-shadow: 0 0 40px rgba(0,245,255,0.15), inset 0 0 30px rgba(0,245,255,0.02);
+        }
+
+        #ai_box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-pink), transparent);
+        }
+
+        .ai-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .ai-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            color: var(--neon-cyan);
+        }
+
+        .ai-close {
+            background: none; border: none;
+            color: var(--text-dim);
+            cursor: crosshair;
+            font-size: 1rem; line-height: 1;
+            transition: color 0.2s;
+        }
+        .ai-close:hover { color: var(--neon-pink); }
+
+        #ai_content {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: #8ab8c8;
+            line-height: 1.7;
+            max-height: 200px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-cyan) transparent;
+        }
+
+        .ai-fab {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: crosshair;
+            box-shadow: 0 0 20px rgba(0,245,255,0.3), inset 0 0 15px rgba(0,245,255,0.05);
+            transition: all 0.3s;
+            animation: fab-pulse 3s infinite;
+        }
+
+        @keyframes fab-pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(0,245,255,0.3), inset 0 0 15px rgba(0,245,255,0.05); }
+            50%       { box-shadow: 0 0 35px rgba(0,245,255,0.5), inset 0 0 20px rgba(0,245,255,0.08); }
+        }
+
+        .ai-fab:hover { background: rgba(0,245,255,0.1); transform: scale(1.05); }
+
+        .fixed-bot {
+            position: fixed;
+            bottom: 1.5rem; right: 1.5rem;
+            z-index: 9999;
+        }
+
+        .cyber-spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(0,245,255,0.1);
+            border-top-color: var(--neon-cyan);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .cyber-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            opacity: 0.2;
+            margin: 1.5rem 0;
+        }
+
+        /* update flash */
+        .flash { animation: data-flash 0.4s ease; }
+        @keyframes data-flash {
+            0%   { background: rgba(0,245,255,0.12); }
+            100% { background: transparent; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">🛡 SUPPLYGUARD</div>
+        <div class="logo-tag">SUPPLY CHAIN THREAT INTELLIGENCE SYSTEM</div>
+        <div class="status-bar">
+            <span><span class="status-dot"></span>SYSTEM ONLINE</span>
+            <span>// LIVE MONITORING ACTIVE</span>
+            <span>NODE: SG-ALPHA-01</span>
+        </div>
+    </div>
+
+    <!-- RISK LEVEL BANNER -->
+    <div class="risk-banner">
+        <div>
+            <div class="risk-label">// CURRENT THREAT LEVEL</div>
+            <div class="risk-value" id="risk">SCANNING...</div>
+        </div>
+        <div class="risk-indicator" id="risk-pips">
+            <div class="risk-pip" id="pip-1"></div>
+            <div class="risk-pip" id="pip-2"></div>
+            <div class="risk-pip" id="pip-3"></div>
+            <div class="risk-pip" id="pip-4"></div>
+        </div>
+    </div>
+
+    <!-- ROW 1: Runtime + Threats -->
+    <div class="grid-2">
+
+        <!-- Runtime Metrics -->
+        <div class="panel">
+            <div class="panel-corner-tl"></div>
+            <div class="panel-title">⚙ Runtime Metrics</div>
+
+            <div class="metric-label">CPU LOAD <span id="cpu">--%</span></div>
+            <div class="bar-track">
+                <div id="cpu-bar" class="bar-fill bar-cpu" style="width:0%"></div>
+            </div>
+
+            <div class="metric-label">MEMORY <span id="memory">--%</span></div>
+            <div class="bar-track">
+                <div id="memory-bar" class="bar-fill bar-mem" style="width:0%"></div>
+            </div>
+        </div>
+
+        <!-- Threat Alerts -->
+        <div class="panel">
+            <div class="panel-corner-tl"></div>
+            <div class="panel-title">🚨 Threat Alerts</div>
+            <ul id="alerts" style="padding:0; margin:0;"></ul>
+        </div>
+
+    </div>
+
+    <!-- SBOM -->
+    <div class="panel" style="margin-bottom:1.5rem;">
+        <div class="panel-corner-tl"></div>
+        <div class="panel-title">📦 Software Bill of Materials</div>
+        <div class="sbom-scroll">
+            <ul id="sbom" style="padding:0; margin:0;"></ul>
+        </div>
+    </div>
+
+    <div class="cyber-divider"></div>
+
+    <!-- Custom Scan Form -->
+    <div class="form-panel panel">
+        <div class="panel-corner-tl"></div>
+        <div class="panel-title" style="text-align:center; margin-bottom:1.5rem;">🔍 Custom Scan</div>
+        <form method="POST" action="/custom-scan">
+            <input class="cyber-input" name="library" placeholder="// LIBRARY  e.g. flask" required>
+            <input class="cyber-input" name="version" placeholder="// VERSION  e.g. 2.0" required>
+            <select name="mode" class="cyber-select">
+                <option value="all">ALL VECTORS</option>
+                <option value="known">KNOWN VULNERABILITIES</option>
+                <option value="unknown">UNKNOWN VERSIONS</option>
+            </select>
+            <button class="btn-primary" type="submit"><span>INITIATE SCAN</span></button>
+        </form>
+    </div>
+
+    <!-- Scan All -->
+    <div class="scan-all-block">
+        <a href="/custom-scan-all" class="btn-secondary"><span>⚡ SCAN ALL LIBRARIES</span></a>
+        <p class="scan-all-sub">// CHECK INSTALLED + POPULAR LIBRARIES AGAINST KNOWN THREAT VECTORS</p>
+    </div>
+
+</div>
+
+<!-- AI Floating Bot -->
+<div class="fixed-bot">
+    <div id="ai_box" style="display:none; position:relative;">
+        <div class="ai-header">
+            <span class="ai-title">🤖 AI SECURITY ANALYST</span>
+            <button class="ai-close" onclick="toggleAI()">✕</button>
+        </div>
+        <div id="ai_content">AWAITING ANALYSIS REQUEST...</div>
+    </div>
+    <button class="ai-fab" onclick="toggleAI()">🤖</button>
+</div>
+
 <script>
-function updateRuntime() {
-  fetch("/runtime")
-    .then(r => r.json())
-    .then(d => {
-      document.getElementById("cpu").innerText = d.cpu + "%";
-      document.getElementById("memory").innerText = d.memory + "%";
-    });
-}
+    // ── Risk Level ──────────────────────────────────────────────
+    const RISK_CONFIG = {
+        low:      { cls: 'risk-low',      pips: 1, color: '#39ff14' },
+        medium:   { cls: 'risk-medium',   pips: 2, color: '#ffea00' },
+        high:     { cls: 'risk-high',     pips: 3, color: '#ff6b00' },
+        critical: { cls: 'risk-critical', pips: 4, color: '#ff006e' },
+    };
 
-function updateRisk() {
-  fetch("/risk")
-    .then(r => r.json())
-    .then(d => {
-      document.getElementById("risk").innerText = d.risk;
-    });
-}
+    function updateRisk() {
+        fetch("/risk")
+            .then(r => r.json())
+            .then(d => {
+                const el = document.getElementById("risk");
+                const level = (d.risk || "low").toLowerCase();
+                const cfg = RISK_CONFIG[level] || RISK_CONFIG.low;
 
-function updateThreats() {
-  fetch("/threats")
-    .then(r => r.json())
-    .then(alerts => {
-      let ul = document.getElementById("alerts");
-      ul.innerHTML = "";
-      if (alerts.length === 0) {
-        ul.innerHTML = "<li>No threats detected</li>";
-      } else {
-        alerts.forEach(a => {
-          ul.innerHTML += `<li style="color:red">${a}</li>`;
-        });
-      }
-    });
-}
+                el.textContent = d.risk.toUpperCase();
+                el.className = "risk-value " + cfg.cls;
 
-function updateSBOM() {
-  fetch("/sbom")
-    .then(r => r.json())
-    .then(pkgs => {
-      let ul = document.getElementById("sbom");
-      ul.innerHTML = "";
-      pkgs.forEach(p => {
-        let color = p.status === "VULNERABLE" ? "red" : "green";
-        ul.innerHTML += `<li style="color:${color}">
-          ${p.name} - ${p.version} (${p.status})
-        </li>`;
-      });
-    });
-}
+                // update pips
+                for (let i = 1; i <= 4; i++) {
+                    const pip = document.getElementById("pip-" + i);
+                    if (i <= cfg.pips) {
+                        pip.style.background = cfg.color;
+                        pip.style.boxShadow = `0 0 8px ${cfg.color}`;
+                    } else {
+                        pip.style.background = 'rgba(255,255,255,0.05)';
+                        pip.style.boxShadow = 'none';
+                    }
+                }
+            })
+            .catch(() => {});
+    }
 
-setInterval(() => {
-  updateRuntime();
-  updateRisk();
-  updateThreats();
-  updateSBOM();
-}, 3000);
+    // ── Runtime ──────────────────────────────────────────────────
+    function updateRuntime() {
+        fetch("/runtime")
+            .then(r => r.json())
+            .then(d => {
+                const cpuEl  = document.getElementById("cpu");
+                const memEl  = document.getElementById("memory");
+                cpuEl.textContent  = d.cpu + "%";
+                memEl.textContent  = d.memory + "%";
+                document.getElementById("cpu-bar").style.width    = d.cpu + "%";
+                document.getElementById("memory-bar").style.width = d.memory + "%";
+                flash(cpuEl); flash(memEl);
+            })
+            .catch(() => {});
+    }
+
+    // ── Threats ──────────────────────────────────────────────────
+    function updateThreats() {
+        fetch("/threats")
+            .then(r => r.json())
+            .then(alerts => {
+                const ul = document.getElementById("alerts");
+                ul.innerHTML = "";
+                if (!alerts || alerts.length === 0) {
+                    ul.innerHTML = `<li class="no-threat">ALL SYSTEMS NOMINAL. NO THREATS DETECTED.</li>`;
+                } else {
+                    alerts.forEach(a => {
+                        const li = document.createElement("li");
+                        li.className = "threat-item";
+                        li.innerHTML = `<span style="color:var(--neon-pink)">▶</span> ${a}`;
+                        ul.appendChild(li);
+                    });
+                }
+            })
+            .catch(() => {});
+    }
+
+    // ── SBOM ─────────────────────────────────────────────────────
+    function updateSBOM() {
+        fetch("/sbom")
+            .then(r => r.json())
+            .then(pkgs => {
+                const ul = document.getElementById("sbom");
+                ul.innerHTML = "";
+                pkgs.forEach(p => {
+                    const isVuln = p.status === "VULNERABLE";
+                    const li = document.createElement("li");
+                    li.className = "sbom-item";
+                    li.innerHTML = `
+                        <span>
+                            <span>${p.name}</span>
+                            <span class="sbom-version">v${p.version}</span>
+                        </span>
+                        <span class="badge ${isVuln ? 'badge-vuln' : 'badge-safe'}">
+                            ${isVuln ? '⚠ VULN' : '✔ SAFE'}
+                        </span>`;
+                    ul.appendChild(li);
+                });
+            })
+            .catch(() => {});
+    }
+
+    // ── AI Bot ───────────────────────────────────────────────────
+    async function toggleAI() {
+        const box     = document.getElementById("ai_box");
+        const content = document.getElementById("ai_content");
+        const isHidden = box.style.display === "none";
+        box.style.display = isHidden ? "block" : "none";
+
+        if (isHidden) {
+            content.innerHTML = `<span class="cyber-spinner"></span> &nbsp;ANALYZING SECURITY POSTURE...`;
+            try {
+                const res  = await fetch("/ai_summary");
+                const data = await res.json();
+                content.innerHTML = data.summary || "NO INSIGHTS AVAILABLE.";
+            } catch (e) {
+                content.innerHTML = "[ERR] AI SERVICE OFFLINE";
+            }
+        }
+    }
+
+    // ── Utility ──────────────────────────────────────────────────
+    function flash(el) {
+        el.classList.remove("flash");
+        void el.offsetWidth; // reflow
+        el.classList.add("flash");
+    }
+
+    // ── Poll all endpoints ────────────────────────────────────────
+    function pollAll() {
+        updateRuntime();
+        updateRisk();
+        updateThreats();
+        updateSBOM();
+    }
+
+    pollAll();
+    setInterval(pollAll, 3000);
 </script>
+
+</body>
+</html>
