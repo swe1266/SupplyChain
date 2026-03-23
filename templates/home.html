@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>SupplyGuard - Security Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <title>SupplyGuard Pro | Advanced Security Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --neon-cyan: #00f5ff;
@@ -16,9 +18,15 @@
             --grid-color: rgba(0, 245, 255, 0.04);
             --text-primary: #c8f0ff;
             --text-dim: #4a7a8a;
+            --primary: #00f2fe;
+            --accent: #7f00ff;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             background-color: var(--dark-bg);
@@ -47,13 +55,11 @@
             content: '';
             position: fixed;
             inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0,0,0,0.15) 2px,
-                rgba(0,0,0,0.15) 4px
-            );
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.15) 2px,
+                    rgba(0, 0, 0, 0.15) 4px);
             pointer-events: none;
             z-index: 1;
         }
@@ -77,7 +83,8 @@
             content: '';
             position: absolute;
             top: 50%;
-            left: 0; right: 0;
+            left: 0;
+            right: 0;
             height: 1px;
             background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
             opacity: 0.4;
@@ -90,6 +97,7 @@
             letter-spacing: 0.2em;
             background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: none;
             display: inline-block;
@@ -98,10 +106,28 @@
         }
 
         @keyframes glitch {
-            0%, 92%, 100% { transform: none; filter: none; }
-            93% { transform: translateX(-3px); filter: hue-rotate(90deg); }
-            95% { transform: translateX(3px) skewX(2deg); filter: hue-rotate(-90deg); }
-            97% { transform: translateX(-1px); filter: none; }
+
+            0%,
+            92%,
+            100% {
+                transform: none;
+                filter: none;
+            }
+
+            93% {
+                transform: translateX(-3px);
+                filter: hue-rotate(90deg);
+            }
+
+            95% {
+                transform: translateX(3px) skewX(2deg);
+                filter: hue-rotate(-90deg);
+            }
+
+            97% {
+                transform: translateX(-1px);
+                filter: none;
+            }
         }
 
         .logo-tag {
@@ -125,7 +151,8 @@
 
         .status-dot {
             display: inline-block;
-            width: 6px; height: 6px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: var(--neon-green);
             box-shadow: 0 0 8px var(--neon-green);
@@ -135,8 +162,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
         }
 
         /* ── PANELS ── */
@@ -153,7 +187,9 @@
         .panel::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 2px;
             background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
         }
@@ -162,8 +198,10 @@
         .panel::after {
             content: '';
             position: absolute;
-            bottom: 0; right: 0;
-            width: 20px; height: 20px;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
             border-bottom: 2px solid var(--neon-cyan);
             border-right: 2px solid var(--neon-cyan);
             opacity: 0.5;
@@ -171,8 +209,10 @@
 
         .panel-corner-tl {
             position: absolute;
-            top: 0; left: 0;
-            width: 20px; height: 20px;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
             border-top: 2px solid var(--neon-cyan);
             border-left: 2px solid var(--neon-cyan);
             opacity: 0.5;
@@ -195,7 +235,11 @@
             margin-bottom: 1.5rem;
         }
 
-        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
 
         /* ── RUNTIME METRICS ── */
         .metric-label {
@@ -208,7 +252,9 @@
             justify-content: space-between;
         }
 
-        .metric-label span { color: var(--neon-cyan); }
+        .metric-label span {
+            color: var(--neon-cyan);
+        }
 
         .bar-track {
             width: 100%;
@@ -230,14 +276,23 @@
         .bar-fill::after {
             content: '';
             position: absolute;
-            right: -2px; top: -3px;
-            width: 3px; height: 12px;
+            right: -2px;
+            top: -3px;
+            width: 3px;
+            height: 12px;
             background: white;
             box-shadow: 0 0 8px currentColor;
         }
 
-        .bar-cpu { background: var(--neon-cyan); box-shadow: 0 0 12px var(--neon-cyan); }
-        .bar-mem { background: var(--neon-pink); box-shadow: 0 0 12px var(--neon-pink); }
+        .bar-cpu {
+            background: var(--neon-cyan);
+            box-shadow: 0 0 12px var(--neon-cyan);
+        }
+
+        .bar-mem {
+            background: var(--neon-pink);
+            box-shadow: 0 0 12px var(--neon-pink);
+        }
 
         /* ── THREATS ── */
         .threat-item {
@@ -256,11 +311,22 @@
         }
 
         @keyframes threat-flash {
-            0%, 80%, 100% { border-left-color: var(--neon-pink); }
-            85% { border-left-color: var(--neon-yellow); }
+
+            0%,
+            80%,
+            100% {
+                border-left-color: var(--neon-pink);
+            }
+
+            85% {
+                border-left-color: var(--neon-yellow);
+            }
         }
 
-        .threat-icon { color: var(--neon-pink); font-size: 0.8rem; }
+        .threat-icon {
+            color: var(--neon-pink);
+            font-size: 0.8rem;
+        }
 
         .no-threat {
             color: var(--neon-green);
@@ -269,7 +335,9 @@
             letter-spacing: 0.1em;
         }
 
-        .no-threat::before { content: '> '; }
+        .no-threat::before {
+            content: '> ';
+        }
 
         /* ── SBOM ── */
         .sbom-scroll {
@@ -284,16 +352,24 @@
             justify-content: space-between;
             align-items: center;
             padding: 0.5rem 0.6rem;
-            border-bottom: 1px solid rgba(0,245,255,0.06);
+            border-bottom: 1px solid rgba(0, 245, 255, 0.06);
             font-family: 'Share Tech Mono', monospace;
             font-size: 0.72rem;
             transition: background 0.2s;
         }
 
-        .sbom-item:hover { background: rgba(0,245,255,0.04); }
+        .sbom-item:hover {
+            background: rgba(0, 245, 255, 0.04);
+        }
 
-        .sbom-name { color: var(--text-primary); }
-        .sbom-version { color: var(--text-dim); margin-left: 0.5rem; }
+        .sbom-name {
+            color: var(--text-primary);
+        }
+
+        .sbom-version {
+            color: var(--text-dim);
+            margin-left: 0.5rem;
+        }
 
         .badge {
             padding: 0.2rem 0.6rem;
@@ -308,7 +384,7 @@
             background: rgba(255, 0, 110, 0.15);
             color: var(--neon-pink);
             border: 1px solid rgba(255, 0, 110, 0.4);
-            box-shadow: 0 0 8px rgba(255,0,110,0.2);
+            box-shadow: 0 0 8px rgba(255, 0, 110, 0.2);
         }
 
         .badge-safe {
@@ -337,11 +413,13 @@
             margin-bottom: 0.75rem;
         }
 
-        .cyber-input::placeholder { color: var(--text-dim); }
+        .cyber-input::placeholder {
+            color: var(--text-dim);
+        }
 
         .cyber-input:focus {
             border-color: var(--neon-cyan);
-            box-shadow: 0 0 15px rgba(0,245,255,0.15), inset 0 0 10px rgba(0,245,255,0.03);
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.15), inset 0 0 10px rgba(0, 245, 255, 0.03);
         }
 
         .cyber-select {
@@ -363,7 +441,9 @@
             background-position: right 1rem center;
         }
 
-        .cyber-select option { background: #030812; }
+        .cyber-select option {
+            background: #030812;
+        }
 
         .btn-primary {
             width: 100%;
@@ -392,9 +472,19 @@
             z-index: 0;
         }
 
-        .btn-primary:hover::before { transform: translateX(0); }
-        .btn-primary:hover { color: var(--dark-bg); box-shadow: 0 0 25px rgba(0,245,255,0.4); }
-        .btn-primary span { position: relative; z-index: 1; }
+        .btn-primary:hover::before {
+            transform: translateX(0);
+        }
+
+        .btn-primary:hover {
+            color: var(--dark-bg);
+            box-shadow: 0 0 25px rgba(0, 245, 255, 0.4);
+        }
+
+        .btn-primary span {
+            position: relative;
+            z-index: 1;
+        }
 
         .btn-secondary {
             display: inline-block;
@@ -424,9 +514,19 @@
             z-index: 0;
         }
 
-        .btn-secondary:hover::before { transform: translateX(0); }
-        .btn-secondary:hover { color: var(--dark-bg); box-shadow: 0 0 25px rgba(57,255,20,0.4); }
-        .btn-secondary span { position: relative; z-index: 1; }
+        .btn-secondary:hover::before {
+            transform: translateX(0);
+        }
+
+        .btn-secondary:hover {
+            color: var(--dark-bg);
+            box-shadow: 0 0 25px rgba(57, 255, 20, 0.4);
+        }
+
+        .btn-secondary span {
+            position: relative;
+            z-index: 1;
+        }
 
         .scan-all-block {
             text-align: center;
@@ -451,13 +551,15 @@
             border: 1px solid var(--neon-cyan);
             border-radius: 4px;
             padding: 1.2rem;
-            box-shadow: 0 0 40px rgba(0,245,255,0.15), inset 0 0 30px rgba(0,245,255,0.02);
+            box-shadow: 0 0 40px rgba(0, 245, 255, 0.15), inset 0 0 30px rgba(0, 245, 255, 0.02);
         }
 
         #ai_box::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 2px;
             background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-pink), transparent);
         }
@@ -485,7 +587,10 @@
             line-height: 1;
             transition: color 0.2s;
         }
-        .ai-close:hover { color: var(--neon-pink); }
+
+        .ai-close:hover {
+            color: var(--neon-pink);
+        }
 
         #ai_content {
             font-family: 'Share Tech Mono', monospace;
@@ -510,18 +615,25 @@
             align-items: center;
             justify-content: center;
             cursor: crosshair;
-            box-shadow: 0 0 20px rgba(0,245,255,0.3), inset 0 0 15px rgba(0,245,255,0.05);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.3), inset 0 0 15px rgba(0, 245, 255, 0.05);
             transition: all 0.3s;
             animation: fab-pulse 3s infinite;
         }
 
         @keyframes fab-pulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(0,245,255,0.3), inset 0 0 15px rgba(0,245,255,0.05); }
-            50% { box-shadow: 0 0 35px rgba(0,245,255,0.5), inset 0 0 20px rgba(0,245,255,0.08); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(0, 245, 255, 0.3), inset 0 0 15px rgba(0, 245, 255, 0.05);
+            }
+
+            50% {
+                box-shadow: 0 0 35px rgba(0, 245, 255, 0.5), inset 0 0 20px rgba(0, 245, 255, 0.08);
+            }
         }
 
         .ai-fab:hover {
-            background: rgba(0,245,255,0.1);
+            background: rgba(0, 245, 255, 0.1);
             transform: scale(1.05);
         }
 
@@ -539,20 +651,32 @@
         }
 
         @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
         }
 
         .cyber-spinner {
-            width: 16px; height: 16px;
-            border: 2px solid rgba(0,245,255,0.1);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0, 245, 255, 0.1);
             border-top-color: var(--neon-cyan);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
             display: inline-block;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         .cyber-divider {
             height: 1px;
@@ -560,157 +684,378 @@
             opacity: 0.2;
             margin: 1.5rem 0;
         }
+
+        .btn-kill {
+            padding: 2px 8px;
+            background: rgba(255, 0, 110, 0.2);
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            cursor: pointer;
+            margin-left: 10px;
+            text-transform: uppercase;
+        }
+
+        .btn-kill:hover {
+            background: var(--neon-pink);
+            color: white;
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
     </style>
 </head>
+
 <body>
 
-<div class="container">
+    <div class="container">
 
-    <!-- HEADER -->
-    <div class="header">
-        <div class="logo">🛡 SUPPLYGUARD</div>
-        <div class="logo-tag">SUPPLY CHAIN THREAT INTELLIGENCE SYSTEM</div>
-        <div class="status-bar">
-            <span><span class="status-dot"></span>SYSTEM ONLINE</span>
-            <span>// MONITORING ACTIVE</span>
-            <span>NODE: SG-ALPHA-01</span>
-        </div>
-    </div>
-
-    <!-- ROW 1: Runtime + Threats -->
-    <div class="grid-2">
-
-        <!-- Runtime Metrics -->
-        <div class="panel">
-            <div class="panel-corner-tl"></div>
-            <div class="panel-title">⚙ Runtime Metrics</div>
-
-            <div class="metric-label">CPU LOAD <span id="cpu">--</span>%</div>
-            <div class="bar-track">
-                <div id="cpu-bar" class="bar-fill bar-cpu" style="width: {{ runtime.cpu }}%"></div>
-            </div>
-
-            <div class="metric-label">MEMORY <span id="memory">--</span>%</div>
-            <div class="bar-track">
-                <div id="memory-bar" class="bar-fill bar-mem" style="width: {{ runtime.memory }}%"></div>
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">🛡 SUPPLYGUARD</div>
+            <div class="logo-tag">SUPPLY CHAIN THREAT INTELLIGENCE SYSTEM</div>
+            <div class="status-bar">
+                <span><span class="status-dot"></span>SYSTEM ONLINE</span>
+                <span>// MONITORING ACTIVE</span>
+                <span>NODE: SG-ALPHA-01</span>
             </div>
         </div>
 
-        <!-- Threat Alerts -->
-        <div class="panel">
-            <div class="panel-corner-tl"></div>
-            <div class="panel-title">🚨 Threat Alerts</div>
-
-            {% if threats %}
-                {% for t in threats %}
-                <div class="threat-item">
-                    <span class="threat-icon">▶</span>
-                    {{ t.library }} — {{ t.issue }}
+        <!-- OVERVIEW CARDS -->
+        <div class="grid-3"
+            style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="panel" style="text-align: center;">
+                <div class="panel-corner-tl"></div>
+                <div class="panel-title">📦 Total Dependencies</div>
+                <div style="font-size: 2.5rem; font-family: 'Share Tech Mono'; color: var(--neon-cyan);">{{ sbom|length
+                    }}</div>
+            </div>
+            <div class="panel" style="text-align: center;">
+                <div class="panel-corner-tl"></div>
+                <div class="panel-title">⚠ Vulnerable Components</div>
+                <div style="font-size: 2.5rem; font-family: 'Share Tech Mono'; color: var(--neon-pink);">
+                    {{ sbom|selectattr('vulnerabilities', 'true')|list|length }}
                 </div>
-                {% endfor %}
-            {% else %}
-                <p class="no-threat">ALL SYSTEMS NOMINAL. NO THREATS DETECTED.</p>
-            {% endif %}
-        </div>
-
-    </div>
-
-    <!-- SBOM -->
-    <div class="panel" style="margin-bottom:1.5rem;">
-        <div class="panel-corner-tl"></div>
-        <div class="panel-title">📦 Software Bill of Materials</div>
-        <div class="sbom-scroll">
-            {% for item in sbom %}
-            <div class="sbom-item">
-                <span>
-                    <span class="sbom-name">{{ item.name }}</span>
-                    <span class="sbom-version">v{{ item.version }}</span>
-                </span>
-                {% if item.vulnerabilities %}
-                    <span class="badge badge-vuln">⚠ VULN</span>
-                {% else %}
-                    <span class="badge badge-safe">✔ SAFE</span>
-                {% endif %}
             </div>
-            {% endfor %}
+            <div class="panel" style="text-align: center;">
+                <div class="panel-corner-tl"></div>
+                <div class="panel-title">🛡 System Risk Level</div>
+                <div style="font-size: 2.5rem; font-family: 'Share Tech Mono'; color: var(--neon-yellow);">
+                    {{ runtime_risk | default('LOW') }}
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="cyber-divider"></div>
+        <!-- ROW 1: Runtime + Alerts -->
+        <div class="grid-2">
 
-    <!-- Custom Scan Form -->
-    <div class="form-panel panel">
-        <div class="panel-corner-tl"></div>
-        <div class="panel-title" style="text-align:center; margin-bottom:1.5rem;">🔍 Custom Scan</div>
+            <!-- RUNTIME CHART -->
+            <div class="panel">
+                <div class="panel-title" style="margin-bottom: 1rem;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    Resource Analytics
+                </div>
+                
+                <div style="height: 180px; width: 100%;">
+                    <canvas id="telemetryChart"></canvas>
+                </div>
 
-        <form method="POST" action="/custom-scan">
-            <input class="cyber-input" name="library" placeholder="// LIBRARY  e.g. flask" required>
-            <input class="cyber-input" name="version" placeholder="// VERSION  e.g. 2.0" required>
-            <select name="mode" class="cyber-select">
-                <option value="all">ALL VECTORS</option>
-                <option value="known">KNOWN VULNERABILITIES</option>
-                <option value="unknown">UNKNOWN VERSIONS</option>
-            </select>
-            <button class="btn-primary" type="submit"><span>INITIATE SCAN</span></button>
-        </form>
-    </div>
+                <div style="display: flex; justify-content: space-around; margin-top: 1rem; font-size: 0.7rem; font-family: 'JetBrains Mono';">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 10px; height: 10px; border-radius: 2px; background: var(--primary);"></span>
+                        CPU: <span id="label-cpu" style="color: #fff;">--%</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 10px; height: 10px; border-radius: 2px; background: var(--accent);"></span>
+                        MEM: <span id="label-mem" style="color: #fff;">--%</span>
+                    </div>
+                </div>
 
-    <!-- Scan All -->
-    <div class="scan-all-block">
-        <a href="/custom-scan-all" class="btn-secondary"><span>⚡ SCAN ALL LIBRARIES</span></a>
-        <p class="scan-all-sub">// CHECK INSTALLED + POPULAR LIBRARIES AGAINST KNOWN THREAT VECTORS</p>
-    </div>
+                <div style="font-size: 0.6rem; color: var(--text-dim); text-align: center; margin-top: 1rem; font-style: italic;">
+                    Rolling Context: 60s Historical Window
+                </div>
+            </div>
 
-</div>
+            <!-- Live Monitoring Alerts -->
+            <div class="panel">
+                <div class="panel-corner-tl"></div>
+                <div class="panel-title">🚨 Live Monitoring / Alerts</div>
+                <div class="sbom-scroll" id="alerts-container">
+                    {% if alerts %}
+                    {% for a in alerts %}
+                    <div class="threat-item" style="justify-content: space-between;">
+                        <div style="display:flex; align-items:center; gap: 0.5rem;">
+                            <span class="threat-icon">▶</span>
+                            [{{ a.source }}] {{ a.message }}
+                        </div>
 
-<!-- AI Floating Bot -->
-<div class="fixed-bot">
-    <div id="ai_box" style="display:none; position:relative;">
-        <div class="ai-header">
-            <span class="ai-title">🤖 AI SECURITY ANALYST</span>
-            <button class="ai-close" onclick="toggleAI()">✕</button>
+                        {% if a.source == 'RUNTIME' and runtime.top_process %}
+                        <button class="btn-kill" onclick="killProcess('{{ runtime.top_process.pid }}')">
+                            TERMINATE {{ runtime.top_process.pid }} ❌
+                        </button>
+                        {% endif %}
+
+                        {% if 'Typosquatting' in a.message %}
+                        <button class="btn-kill"
+                            style="border-color: var(--neon-yellow); color: var(--neon-yellow); background: rgba(255, 234, 0, 0.1);"
+                            onclick="remediateTyposquatting('{{ a.library }}')">
+                            REMEDIATE 🛡
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="no-threat">ALL SYSTEMS NOMINAL. NO ALERTS DETECTED.</p>
+                    {% endif %}
+                </div>
+            </div>
+
         </div>
-        <div id="ai_content">
-            <span class="typing">AWAITING ANALYSIS REQUEST</span>
+
+        <!-- Dependency Risk Table -->
+        <div class="panel" style="margin-bottom:1.5rem;">
+            <div class="panel-corner-tl"></div>
+            <div class="panel-title">📦 Dependency Risk Table</div>
+            <div class="sbom-scroll">
+                <table
+                    style="width: 100%; text-align: left; border-collapse: collapse; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;">
+                    <tr style="border-bottom: 1px solid var(--panel-border); color: var(--neon-cyan);">
+                        <th style="padding: 0.5rem;">Component</th>
+                        <th style="padding: 0.5rem;">Version</th>
+                        <th style="padding: 0.5rem;">Supplier</th>
+                        <th style="padding: 0.5rem;">License</th>
+                        <th style="padding: 0.5rem;">Risk</th>
+                        <th style="padding: 0.5rem; text-align: right;">Action</th>
+                    </tr>
+                    {% for item in sbom %}
+                    <tr style="border-bottom: 1px solid rgba(0,245,255,0.06); transition: background 0.2s;"
+                        onmouseover="this.style.background='rgba(0,245,255,0.04)'"
+                        onmouseout="this.style.background='transparent'">
+                        <td style="padding: 0.5rem; color: var(--text-primary);">{{ item.name }}</td>
+                        <td style="padding: 0.5rem; color: var(--text-dim);">v{{ item.version }}</td>
+                        <td style="padding: 0.5rem; color: var(--text-dim);">{{ item.supplier }}</td>
+                        <td style="padding: 0.5rem; color: var(--text-dim); max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                            title="{{ item.license }}">{{ item.license }}</td>
+                        <td style="padding: 0.5rem;">
+                            {% if item.risk_level == 'CRITICAL' %}
+                            <span class="badge badge-vuln">CRITICAL ({{ item.risk_score }})</span>
+                            {% elif item.risk_level == 'HIGH' %}
+                            <span class="badge badge-vuln"
+                                style="border-color: #ffaa00; color: #ffaa00; background: rgba(255,170,0,0.15)">HIGH ({{
+                                item.risk_score }})</span>
+                            {% elif item.risk_level == 'MEDIUM' %}
+                            <span class="badge"
+                                style="border: 1px solid #ffff00; color: #ffff00; background: rgba(255,255,0,0.15)">MEDIUM
+                                ({{ item.risk_score }})</span>
+                            {% else %}
+                            <span class="badge badge-safe">LOW ({{ item.risk_score }})</span>
+                            {% endif %}
+                        </td>
+                        <td
+                            style="padding: 0.5rem; text-align: right; color: var(--neon-green); font-weight: bold; font-size: 0.75rem;">
+                            {{ item.action|default('Up to date') }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
         </div>
+
+        <div class="cyber-divider"></div>
+
+        <!-- Custom Scan Form -->
+        <div class="form-panel panel">
+            <div class="panel-corner-tl"></div>
+            <div class="panel-title" style="text-align:center; margin-bottom:1.5rem;">🔍 Custom Scan</div>
+
+            <form method="POST" action="/custom-scan">
+                <input class="cyber-input" name="library" placeholder="// LIBRARY  e.g. flask" required>
+                <input class="cyber-input" name="version" placeholder="// VERSION  e.g. 2.0" required>
+                <select name="mode" class="cyber-select">
+                    <option value="all">ALL VECTORS</option>
+                    <option value="known">KNOWN VULNERABILITIES</option>
+                    <option value="unknown">UNKNOWN VERSIONS</option>
+                </select>
+                <button class="btn-primary" type="submit"><span>INITIATE SCAN</span></button>
+            </form>
+        </div>
+
+        <!-- Scan All -->
+        <div class="scan-all-block">
+            <a href="/custom-scan-all" class="btn-secondary"><span>⚡ SCAN ALL LIBRARIES</span></a>
+            <p class="scan-all-sub">// CHECK INSTALLED + POPULAR LIBRARIES AGAINST KNOWN THREAT VECTORS</p>
+        </div>
+
     </div>
-    <button class="ai-fab" onclick="toggleAI()">🤖</button>
-</div>
 
-<script>
-async function toggleAI() {
-    const box = document.getElementById("ai_box");
-    const content = document.getElementById("ai_content");
-    const isHidden = box.style.display === "none";
+    <!-- AI Floating Bot -->
+    <div class="fixed-bot">
+        <div id="ai_box" style="display:none; position:relative;">
+            <div class="ai-header">
+                <span class="ai-title">🤖 AI SECURITY ANALYST</span>
+                <button class="ai-close" onclick="toggleAI()">✕</button>
+            </div>
+            <div id="ai_content">
+                <span class="typing">AWAITING ANALYSIS REQUEST</span>
+            </div>
+        </div>
+        <button class="ai-fab" onclick="toggleAI()">🤖</button>
+    </div>
 
-    box.style.display = isHidden ? "block" : "none";
+    <script>
+        async function toggleAI() {
+            const box = document.getElementById("ai_box");
+            const content = document.getElementById("ai_content");
+            const isHidden = box.style.display === "none";
 
-    if (isHidden) {
-        content.innerHTML = `<span class="cyber-spinner"></span> &nbsp;ANALYZING SECURITY POSTURE...`;
-        try {
-            const res = await fetch("/ai_summary");
-            const data = await res.json();
-            content.innerHTML = `<span class="typing"></span>${data.summary || "NO INSIGHTS AVAILABLE."}`;
-        } catch (e) {
-            content.innerHTML = `[ERR] AI SERVICE OFFLINE`;
+            box.style.display = isHidden ? "block" : "none";
+
+            if (isHidden) {
+                content.innerHTML = `<span class="cyber-spinner"></span> &nbsp;ANALYZING SECURITY POSTURE...`;
+                try {
+                    const res = await fetch("/ai_summary");
+                    const data = await res.json();
+                    content.innerHTML = `<span class="typing"></span>${data.summary || "NO INSIGHTS AVAILABLE."}`;
+                } catch (e) {
+                    content.innerHTML = `[ERR] AI SERVICE OFFLINE`;
+                }
+            }
         }
-    }
-}
 
-async function updateRuntime() {
-    try {
-        const res = await fetch("/runtime");
-        const data = await res.json();
-        document.getElementById("cpu").innerText = data.cpu;
-        document.getElementById("memory").innerText = data.memory;
-        document.getElementById("cpu-bar").style.width = data.cpu + "%";
-        document.getElementById("memory-bar").style.width = data.memory + "%";
-    } catch(e) {}
-}
+        // Chart Initialization
+        const ctx = document.getElementById('telemetryChart').getContext('2d');
+        const labels = Array(30).fill('');
+        const cpuData = Array(30).fill(0);
+        const memData = Array(30).fill(0);
 
-setInterval(updateRuntime, 2000);
-updateRuntime();
-</script>
+        const gradientCpu = ctx.createLinearGradient(0, 0, 0, 180);
+        gradientCpu.addColorStop(0, 'rgba(0, 242, 254, 0.3)');
+        gradientCpu.addColorStop(1, 'rgba(0, 242, 254, 0)');
 
+        const telemetryChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'CPU',
+                        data: cpuData,
+                        borderColor: '#00f2fe',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: gradientCpu
+                    },
+                    {
+                        label: 'MEMORY',
+                        data: memData,
+                        borderColor: '#7f00ff',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.4,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { display: false },
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: {
+                            color: '#94a3b8',
+                            font: { size: 10, family: 'JetBrains Mono' },
+                            stepSize: 25,
+                            callback: value => value + '%'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
+                animation: { duration: 0 }
+            }
+        });
+
+        // Runtime Updates
+        async function updateTelemetry() {
+            try {
+                const res = await fetch('/runtime');
+                const data = await res.json();
+                console.log("[Telemetry Update]", data);
+                
+                document.getElementById('label-cpu').innerText = `${Math.round(data.cpu)}%`;
+                document.getElementById('label-mem').innerText = `${Math.round(data.memory)}%`;
+                
+                // Update Chart
+                cpuData.push(data.cpu);
+                memData.push(data.memory);
+                
+                if (cpuData.length > 30) {
+                    cpuData.shift();
+                    memData.shift();
+                }
+                
+                telemetryChart.update('none'); // Update without animation for performance
+                
+            } catch(e) {}
+        }
+
+        setInterval(updateTelemetry, 2000);
+        updateTelemetry();
+
+        // Security Actions
+        async function killProcess(pid) {
+            if (!confirm(`Are you sure you want to TERMINATE process ${pid}?`)) return;
+            try {
+                const res = await fetch(`/remediate/kill/${pid}`, { method: 'POST' });
+                if (res.ok) alert(`Process ${pid} terminated successfully.`);
+                else alert('Failed to terminate process. Check permissions.');
+            } catch(e) { alert('Termination request failed.'); }
+        }
+
+        async function remediateTyposquatting(library) {
+            if (!confirm(`Remediate Typosquatted library '${library}'? This will attempt to remove the suspicious package.`)) return;
+            try {
+                const res = await fetch(`/remediate/typosquatting/${library}`, { method: 'POST' });
+                if (res.ok) alert(`Remediation for ${library} triggered.`);
+                else alert('Remediation failed.');
+            } catch(e) { alert('Remediation request failed.'); }
+        }
+    </script>
+
+    <script>
+        function killProcess(pid) {
+            if (!confirm(`Are you sure you want to terminate PID ${pid}?`)) return;
+
+            fetch(`/remediate/kill/${pid}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    window.location.reload();
+                });
+        }
+
+        function remediateTyposquatting(packageName) {
+            if (!confirm(`Are you sure you want to remediate typosquatting for package '${packageName}'? This will attempt to uninstall it.`)) return;
+
+            fetch(`/remediate/typosquatting/${packageName}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error remediating typosquatting:', error);
+                    alert('Failed to remediate typosquatting. Check console for details.');
+                });
+        }
+    </script>
 </body>
+
 </html>

@@ -1,10 +1,10 @@
 {
-    "cpu_mean": 9.946666666666667,
-    "cpu_std": 7.731045493707193,
-    "memory_mean": 80.59666666666666,
-    "memory_std": 2.4247995094573125,
-    "network_mean": 31218.283333333333,
-    "network_std": 178433.3004012623,
-    "process_count_mean": 262.78333333333336,
-    "process_count_std": 2.5410357622627116
+    "cpu_mean": 6.628333333333333,
+    "cpu_std": 5.38106208212214,
+    "memory_mean": 77.02083333333333,
+    "memory_std": 0.9773825303555703,
+    "network_mean": 1745.625,
+    "network_std": 6649.6964131909845,
+    "process_count_mean": 262.25,
+    "process_count_std": 2.2650059825175597
 }

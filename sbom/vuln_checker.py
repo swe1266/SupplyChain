@@ -19,10 +19,22 @@ def check_vulnerability_dynamic(package, version, ecosystem="Maven"):
 
     vulns = []
     for v in data["vulns"]:
+        cve_id = v.get("id")
+        aliases = v.get("aliases", [])
+        for alias in aliases:
+            if alias.startswith("CVE-"):
+                cve_id = alias
+                break
+
+        severity_score = "UNKNOWN"
+        if "severity" in v and len(v["severity"]) > 0:
+            sev_data = v["severity"][0]
+            severity_score = sev_data.get("score", "UNKNOWN")
+
         vulns.append({
-            "id": v.get("id"),
-            "summary": v.get("summary"),
-            "severity": v.get("severity", []),
+            "id": cve_id,
+            "summary": v.get("summary", "No summary provided"),
+            "severity": severity_score,
             "references": v.get("references", [])
         })
 

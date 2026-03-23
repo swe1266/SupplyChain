@@ -1,0 +1,135 @@
+[
+    {
+        "id": "ALT-19",
+        "message": "Suspicious behavior in network detected (Z: -3.13)",
+        "severity": "HIGH",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-23T19:57:10.004645"
+    },
+    {
+        "id": "ALT-18",
+        "message": "Suspicious behavior in cpu detected (Z: -3.11)",
+        "severity": "HIGH",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-23T19:57:09.740997"
+    },
+    {
+        "id": "ALT-17",
+        "message": "Suspicious behavior in network detected (Z: -3.16)",
+        "severity": "HIGH",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-23T19:57:06.519271"
+    },
+    {
+        "id": "ALT-16",
+        "message": "Suspicious behavior in cpu detected (Z: -3.07)",
+        "severity": "HIGH",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-23T19:56:53.719404"
+    },
+    {
+        "id": "ALT-15",
+        "message": "Suspicious behavior in network detected (Z: 3.1)",
+        "severity": "HIGH",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-23T19:41:17.247668"
+    },
+    {
+        "id": "ALT-14",
+        "message": "Suspicious behavior in cpu detected (Z: 3.03)",
+        "severity": "HIGH",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-21T08:30:37.805687"
+    },
+    {
+        "id": "ALT-13",
+        "message": "Suspicious behavior in network detected (Z: 3.15)",
+        "severity": "HIGH",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-21T08:23:53.865395"
+    },
+    {
+        "id": "ALT-12",
+        "message": "Suspicious behavior in process_count detected (Z: 3.16)",
+        "severity": "HIGH",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-21T08:21:39.502979"
+    },
+    {
+        "id": "ALT-11",
+        "message": "Suspicious behavior in network detected (Z: 3.16)",
+        "severity": "HIGH",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-23T19:27:16.055516"
+    },
+    {
+        "id": "ALT-10",
+        "message": "Suspicious behavior in memory detected (Z: 3.16)",
+        "severity": "HIGH",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-21T08:21:39.459738"
+    },
+    {
+        "id": "ALT-9",
+        "message": "Suspicious behavior in cpu detected (Z: 3.16)",
+        "severity": "HIGH",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-21T08:17:18.314570"
+    },
+    {
+        "id": "ALT-8",
+        "message": "[TYPOSQUAT] Suspicious package 'typing_extensions' looks like 'typing-extensions' (94.1% match)",
+        "severity": "HIGH",
+        "source": "SUPPLY_CHAIN",
+        "timestamp": "2026-03-20T21:48:35.684345"
+    },
+    {
+        "id": "ALT-7",
+        "message": "Suspicious behavior in cpu detected",
+        "severity": "MEDIUM",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-14T14:03:53.527635"
+    },
+    {
+        "id": "ALT-6",
+        "message": "High behavior in memory detected",
+        "severity": "HIGH",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-14T14:01:40.049075"
+    },
+    {
+        "id": "ALT-5",
+        "message": "Critical network spike! Process: Antigravity.exe -> 127.0.0.1:65095",
+        "severity": "CRITICAL",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-14T14:01:11.266783"
+    },
+    {
+        "id": "ALT-4",
+        "message": "Critical spike in process_count detected",
+        "severity": "CRITICAL",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-20T21:48:39.505096"
+    },
+    {
+        "id": "ALT-3",
+        "message": "Critical spike in memory detected",
+        "severity": "CRITICAL",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-14T13:59:48.796304"
+    },
+    {
+        "id": "ALT-2",
+        "message": "Suspicious behavior in process_count detected",
+        "severity": "MEDIUM",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-14T11:46:22.708830"
+    },
+    {
+        "id": "ALT-1",
+        "message": "Critical network spike! Process: chrome.exe -> 2606:4700:83b1:d8b7:9a59:6b4:ccf5:ac50:443",
+        "severity": "CRITICAL",
+        "source": "RUNTIME",
+        "timestamp": "2026-03-14T11:46:34.980465"
+    }
+]

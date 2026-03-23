@@ -14,9 +14,11 @@ from monitor.ai_bot import generate_summary
 from monitor.custom_scan import scan_all_libraries
 from monitor.correlate import build_metrics
 from monitor.logger import log_event
+from monitor.alerts import get_alerts, add_alert
+from monitor.integrity import scan_all_integrity
 
 from runtime.collector import collect_metrics
-from runtime.baseline import load_baseline, build_baseline
+from runtime.ewma import load_ewma, update_ewma
 from runtime.anomaly import detect_anomaly
 from runtime.scorer import classify_runtime_risk
 
@@ -25,14 +27,9 @@ from runtime.scorer import classify_runtime_risk
 app = Flask(__name__)
 
 
-# ---------------- BASELINE INITIALIZATION ----------------
-BASELINE_FILE = "data/baseline.json"
-
-if not os.path.exists(BASELINE_FILE):
-    print("[!] Baseline not found. Building baseline (one-time setup)...")
-    baseline = build_baseline()
-else:
-    baseline = load_baseline()
+# ---------------- EWMA BASELINE INITIALIZATION ----------------
+print("[+] Loading EWMA Rolling Baseline System...")
+ewma_data = load_ewma()
 
 # ---------------- HOME DASHBOARD ----------------
 @app.route("/")
@@ -40,33 +37,50 @@ def home():
     sbom_data = generate_sbom()
     threat_data = threat_check(sbom_data)
 
-    runtime_data = {
-        "cpu": psutil.cpu_percent(interval=0.5),
-        "memory": psutil.virtual_memory().percent
-    }
+    runtime_data = collect_metrics()
     metrics = build_metrics(sbom_data, runtime_data)
-
-    # 5. Save correlated metrics
+    
+    # 5. Save correlated metrics 
     with open("data/correlated.json", "w") as f:
         json.dump(metrics, f, indent=4)
 
     log_event(runtime_data, threat_data)
+    
+    alerts_data = get_alerts()
+    
+    # Compute base risk for the table
+    scored_sbom = get_scored_results(sbom_data=sbom_data, runtime_score=0)
+    
+    # Update Recommendation Engine (only for HIGH/CRITICAL)
+    for comp in scored_sbom:
+        if comp.get("risk_level") in ["CRITICAL", "HIGH", "MEDIUM"]:
+            safe = get_safe_version(comp["name"])
+            if safe != "latest" and safe != comp["version"]:
+                comp["action"] = f"Upgrade to v{safe}"
+            else:
+                comp["action"] = "Review CVEs"
+        else:
+            comp["action"] = "Up to date"
+
     return render_template(
         "home.html",
-        sbom=sbom_data,
+        sbom=scored_sbom,
         threats=threat_data,
-        runtime=runtime_data
-        
-
+        runtime=runtime_data, # Now contains top_process
+        alerts=alerts_data
     )
 
 # ---------------- RUNTIME API ----------------
 @app.route("/runtime")
 def runtime_api():
-
+    global ewma_data
     metrics = collect_metrics()
-
-    anomaly_details, score = detect_anomaly(metrics, baseline)
+    
+    # 1. Detect anomaly against CURRENT ewma state
+    anomaly_details, score = detect_anomaly(metrics, ewma_data)
+    
+    # 2. Update the rolling baseline so it learns!
+    ewma_data = update_ewma(metrics, ewma_data)
 
     risk_level = classify_runtime_risk(score)
 
@@ -92,6 +106,11 @@ def threats_api():
     active = random.sample(THREAT_POOL, random.randint(0, 2))
     return jsonify(active)
 
+# ---------------- ALERTS API ----------------
+@app.route("/alerts")
+def alerts_api():
+    return jsonify(get_alerts())
+
 # ---------------- RISK API ----------------
 @app.route("/risk")
 def risk_api():
@@ -100,8 +119,13 @@ def risk_api():
     sbom_data = sbom_api().get_json()
 
     # Get runtime metrics
+    global ewma_data
     metrics = collect_metrics()
-    anomaly_details, score = detect_anomaly(metrics, baseline)
+    anomaly_details, score = detect_anomaly(metrics, ewma_data)
+    
+    # Update baseline
+    ewma_data = update_ewma(metrics, ewma_data)
+    
     runtime_risk = classify_runtime_risk(score)
 
     # Combine into hybrid scoring
@@ -224,10 +248,68 @@ POPULAR_LIBS = ["flask", "django", "requests", "numpy", "pandas", "scipy", "matp
 
 def get_safe_version(lib_name):
     """
-    Suggest a safe version for a library.
-    This can later query OSV or return latest if safe.
+    Suggest a safe version for a library using PyPI API.
     """
+    try:
+        import requests
+        url = f"https://pypi.org/pypi/{lib_name}/json"
+        res = requests.get(url, timeout=3)
+        if res.status_code == 200:
+            return res.json().get("info", {}).get("version", "latest")
+    except Exception:
+        pass
     return "latest"
+
+import subprocess
+
+# ---------------- REMEDIATION API ----------------
+@app.route("/remediate/kill/<int:pid>", methods=["POST"])
+def kill_process(pid):
+    try:
+        proc = psutil.Process(pid)
+        name = proc.name()
+        
+        # Security Note: In a production environment, you'd want to 
+        # strictly verify that this PID was actually flagged as an anomaly first!
+        proc.terminate()
+        
+        return jsonify({
+            "status": "SUCCESS",
+            "message": f"Successfully terminated process {name} (PID: {pid})"
+        })
+    except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
+        return jsonify({
+            "status": "ERROR",
+            "message": str(e)
+        }), 400
+
+@app.route("/remediate/typosquatting/<package_name>", methods=["POST"])
+def remediate_typosquatting(package_name):
+    try:
+        # Security Note: Extremely dangerous in production! 
+        # But for this security demo, it shows 'active' defense.
+        result = subprocess.run(
+            ["pip", "uninstall", "-y", package_name], 
+            capture_output=True, 
+            text=True
+        )
+        
+        if result.returncode == 0:
+            return jsonify({
+                "status": "SUCCESS",
+                "message": f"Successfully uninstalled suspicious package: {package_name}"
+            })
+        else:
+            return jsonify({
+                "status": "ERROR",
+                "message": f"Failed to uninstall: {result.stderr}"
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            "status": "ERROR",
+            "message": str(e)
+        }), 500
 
 # ---------------- RUN APP ----------------
 if __name__ == "__main__":
