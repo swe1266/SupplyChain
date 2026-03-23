@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SupplyGuard | Project Intel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f5ff;
+            --neon-pink: #ff006e;
+            --neon-green: #39ff14;
+            --dark-bg: #030812;
+            --glass-bg: rgba(0, 10, 30, 0.7);
+            --text-primary: #c8f0ff;
+            --text-dim: #4a7a8a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 80px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 245, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 245, 255, 0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(3, 8, 18, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 245, 255, 0.1);
+        }
+
+        .nav-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-decoration: none;
+            letter-spacing: 0.2em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dim);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+            text-transform: uppercase;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-cyan);
+        }
+
+        .nav-links a.active {
+            color: var(--neon-cyan);
+            border-bottom: 1px solid var(--neon-cyan);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            color: var(--neon-cyan);
+            margin-bottom: 2rem;
+            letter-spacing: 0.1em;
+            text-align: center;
+        }
+
+        .content-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 245, 255, 0.1);
+            padding: 3rem;
+            border-radius: 8px;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .content-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: linear-gradient(to bottom, var(--neon-cyan), var(--neon-pink));
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-pink);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--neon-cyan);
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-dim);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="nav-logo">🛡 SUPPLYGUARD</a>
+        <div class="nav-links">
+            <a href="/">HOME</a>
+            <a href="/dashboard">DASHBOARD</a>
+            <a href="/about" class="active">INTEL</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>PROJECT INTEL</h1>
+
+        <div class="content-section">
+            <h2>The Mission</h2>
+            <p>
+                As digital ecosystems expand, so do the risks. SupplyGuard is designed to be the ultimate shield 
+                for modern software architectures. By focusing on the supply chain—the often-overlooked network 
+                of dependencies and runtime behaviors—we provide a comprehensive security overview that standard 
+                firewalls miss.
+            </p>
+        </div>
+
+        <div class="content-section">
+            <h2>Core Features</h2>
+            <ul>
+                <li><strong>Dynamic SBOM Analysis:</strong> Real-time mapping of every dependency in your system.</li>
+                <li><strong>Vulnerability Correlation:</strong> Instant matching against CVE and NVD databases.</li>
+                <li><strong>Runtime Anomaly Detection:</strong> Identifying spikes in CPU, Memory, or Network that indicate active breaches.</li>
+                <li><strong>Typosquatting Defense:</strong> Catching malicious packages before they execute.</li>
+                <li><strong>AI-Powered Insights:</strong> Contextual summaries of your security posture.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        SG-ALPHA // SECURITY CLEARANCE REQUIRED // SYSTEM LOGS ACTIVE
+    </div>
+
+</body>
+</html>

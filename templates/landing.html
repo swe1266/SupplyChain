@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SupplyGuard | Next-Gen Supply Chain Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f5ff;
+            --neon-pink: #ff006e;
+            --neon-green: #39ff14;
+            --dark-bg: #030812;
+            --glass-bg: rgba(0, 10, 30, 0.7);
+            --text-primary: #c8f0ff;
+            --text-dim: #4a7a8a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animated grid background (same as home) */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 245, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 245, 255, 0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+            animation: grid-drift 20s linear infinite;
+        }
+
+        @keyframes grid-drift {
+            from { background-position: 0 0; }
+            to { background-position: 50px 50px; }
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .logo-large {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem;
+            font-weight: 900;
+            letter-spacing: 0.3em;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 15px rgba(0, 245, 255, 0.3));
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(0, 245, 255, 0.3)); }
+            50% { filter: drop-shadow(0 0 30px rgba(255, 0, 110, 0.5)); }
+        }
+
+        .tagline {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+            letter-spacing: 0.5em;
+            margin-bottom: 3rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 245, 255, 0.1);
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 800px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .cta-button {
+            padding: 1rem 2.5rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            border: 1px solid var(--neon-cyan);
+            background: transparent;
+            color: var(--neon-cyan);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            box-shadow: 0 0 30px var(--neon-cyan);
+        }
+
+        .cta-button.secondary {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+        }
+
+        .cta-button.secondary:hover {
+            background: var(--neon-pink);
+            color: white;
+            box-shadow: 0 0 30px var(--neon-pink);
+        }
+
+        /* Features Glimpse */
+        .features-glimpse {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 4rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--neon-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(3, 8, 18, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 245, 255, 0.1);
+        }
+
+        .nav-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-decoration: none;
+            letter-spacing: 0.2em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dim);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+            text-transform: uppercase;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-cyan);
+        }
+
+        .nav-links a.active {
+            color: var(--neon-cyan);
+            border-bottom: 1px solid var(--neon-cyan);
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="nav-logo">🛡 SUPPLYGUARD</a>
+        <div class="nav-links">
+            <a href="/" class="active">HOME</a>
+            <a href="/dashboard">DASHBOARD</a>
+            <a href="/about">INTEL</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="logo-large">SUPPLYGUARD</div>
+        <div class="tagline">Next-Generation Supply Chain Intelligence</div>
+
+        <div class="glass-card">
+            <p class="description">
+                Protect your infrastructure from the inside out. SupplyGuard provides real-time monitoring, 
+                SBOM analytics, and threat intelligence to identify vulnerabilities before they become liabilities.
+            </p>
+            <div class="btn-container">
+                <a href="/dashboard" class="cta-button">INITIALIZE SCAN</a>
+                <a href="/about" class="cta-button secondary">VIEW FEATURES</a>
+            </div>
+        </div>
+
+        <div class="features-glimpse">
+            <div class="feature-item">
+                <div class="feature-icon">🔍</div>
+                <h3 class="feature-title">DEEP SCAN</h3>
+                <p class="feature-desc">Automated SBOM generation and integrity verification.</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📡</div>
+                <h3 class="feature-title">LIVE MON</h3>
+                <p class="feature-desc">Real-time resource and network anomaly detection.</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="feature-title">THREAT INTEL</h3>
+                <p class="feature-desc">Advanced correlation with global vulnerability databases.</p>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

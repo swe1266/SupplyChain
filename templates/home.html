@@ -702,10 +702,70 @@
             color: white;
             box-shadow: 0 0 10px var(--neon-pink);
         }
+
+        /* Navbar Integration */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(3, 8, 18, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 245, 255, 0.1);
+        }
+
+        .nav-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-decoration: none;
+            letter-spacing: 0.2em;
+            font-size: 1.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dim);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            transition: color 0.3s;
+            text-transform: uppercase;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-cyan);
+        }
+
+        .nav-links a.active {
+            color: var(--neon-cyan);
+            border-bottom: 1px solid var(--neon-cyan);
+        }
+
+        .container {
+            padding-top: 100px;
+        }
     </style>
 </head>
 
 <body>
+
+    <nav>
+        <a href="/" class="nav-logo">🛡 SUPPLYGUARD</a>
+        <div class="nav-links">
+            <a href="/">HOME</a>
+            <a href="/dashboard" class="active">DASHBOARD</a>
+            <a href="/about">INTEL</a>
+        </div>
+    </nav>
 
     <div class="container">
 

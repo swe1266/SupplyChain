@@ -33,6 +33,10 @@ ewma_data = load_ewma()
 
 # ---------------- HOME DASHBOARD ----------------
 @app.route("/")
+def landing():
+    return render_template("landing.html")
+
+@app.route("/dashboard")
 def home():
     sbom_data = generate_sbom()
     threat_data = threat_check(sbom_data)
@@ -220,6 +224,10 @@ def custom_scan_all():
     """
     results = scan_all_libraries()
     return render_template("scan_result.html", results=results)
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 # ---------------- AI SUMMARY (CHATBOT API) ----------------
 @app.route("/ai_summary")
